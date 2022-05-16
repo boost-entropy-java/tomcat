@@ -21,14 +21,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * @since Common Annotations 1.2
+ * @since Common Annotations 2.1
+ *
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Priority {
+public @interface Nullable {
 
-    /**
-     * @return the int value
-     */
-    int value();
 }
