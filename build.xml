@@ -56,7 +56,7 @@
 
   <!-- Exact spec versions (for the manifests etc.) -->
   <property name="servlet.spec.version"    value="6.0" />
-  <property name="servlet.revision"        value="-SNAPSHOT" />
+  <property name="servlet.revision"        value="" />
   <property name="jsp.spec.version"        value="3.1" />
   <property name="jsp.revision"            value="" />
   <property name="el.spec.version"         value="5.0" />
@@ -1643,7 +1643,7 @@
       </fileset>
     </txt2html>
   </target>
-  <target name="embed-jars" description="Create experimental embedded jars"
+  <target name="embed-jars" description="Create embedded jars"
     depends="build-manifests,setup-bnd,compile,package" >
 
     <mkdir dir="${tomcat.embed}" />
@@ -1785,7 +1785,7 @@
   </target>
 
   <target name="embed"
-          description="Creates the experimental embedded release"
+          description="Creates the embedded release"
           depends="embed-jars,embed-sources,embed-programmatic-jar" >
 
     <fixcrlf srcdir="${tomcat.embed}" eol="crlf"
