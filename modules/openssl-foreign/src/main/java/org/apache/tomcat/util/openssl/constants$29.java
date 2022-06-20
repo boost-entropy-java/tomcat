@@ -26,43 +26,7 @@ import java.lang.foreign.*;
 import static java.lang.foreign.ValueLayout.*;
 class constants$29 {
 
-    static final FunctionDescriptor d2i_OCSP_RESPONSE$FUNC = FunctionDescriptor.of(ADDRESS,
-        ADDRESS,
-        ADDRESS,
-        JAVA_LONG
-    );
-    static final MethodHandle d2i_OCSP_RESPONSE$MH = RuntimeHelper.downcallHandle(
-        "d2i_OCSP_RESPONSE",
-        constants$29.d2i_OCSP_RESPONSE$FUNC, false
-    );
-    static final FunctionDescriptor OCSP_CERTID_free$FUNC = FunctionDescriptor.ofVoid(
-        ADDRESS
-    );
-    static final MethodHandle OCSP_CERTID_free$MH = RuntimeHelper.downcallHandle(
-        "OCSP_CERTID_free",
-        constants$29.OCSP_CERTID_free$FUNC, false
-    );
-    static final FunctionDescriptor OCSP_REQUEST_new$FUNC = FunctionDescriptor.of(ADDRESS);
-    static final MethodHandle OCSP_REQUEST_new$MH = RuntimeHelper.downcallHandle(
-        "OCSP_REQUEST_new",
-        constants$29.OCSP_REQUEST_new$FUNC, false
-    );
-    static final FunctionDescriptor OCSP_REQUEST_free$FUNC = FunctionDescriptor.ofVoid(
-        ADDRESS
-    );
-    static final MethodHandle OCSP_REQUEST_free$MH = RuntimeHelper.downcallHandle(
-        "OCSP_REQUEST_free",
-        constants$29.OCSP_REQUEST_free$FUNC, false
-    );
-    static final FunctionDescriptor i2d_OCSP_REQUEST$FUNC = FunctionDescriptor.of(JAVA_INT,
-        ADDRESS,
-        ADDRESS
-    );
-    static final MethodHandle i2d_OCSP_REQUEST$MH = RuntimeHelper.downcallHandle(
-        "i2d_OCSP_REQUEST",
-        constants$29.i2d_OCSP_REQUEST$FUNC, false
-    );
-    static final MemorySegment OPENSSL_FILE$SEGMENT = RuntimeHelper.CONSTANT_ALLOCATOR.allocateUtf8String("/tmp/jextract$7507082841068085766.h");
+    static final MemorySegment OPENSSL_FILE$SEGMENT = RuntimeHelper.CONSTANT_ALLOCATOR.allocateUtf8String("/tmp/jextract$17092896582695808251.h");
 }
 
 

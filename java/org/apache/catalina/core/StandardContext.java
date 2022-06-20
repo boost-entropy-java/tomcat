@@ -6378,25 +6378,12 @@ public class StandardContext extends ContainerBase
      */
     private String server = null;
 
-    /**
-     * The Java virtual machines on which this module is running.
-     */
-    private String[] javaVMs = null;
-
     public String getServer() {
         return server;
     }
 
     public String setServer(String server) {
         return this.server=server;
-    }
-
-    public String[] getJavaVMs() {
-        return javaVMs;
-    }
-
-    public String[] setJavaVMs(String[] javaVMs) {
-        return this.javaVMs = javaVMs;
     }
 
     /**

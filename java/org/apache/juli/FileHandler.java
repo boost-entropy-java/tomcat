@@ -538,7 +538,7 @@ public class FileHandler extends Handler {
     }
 
     private void clean() {
-        if (maxDays.intValue() <= 0) {
+        if (maxDays.intValue() <= 0 || Files.notExists(getDirectoryAsPath())) {
             return;
         }
         DELETE_FILES_SERVICE.submit(() -> {
@@ -555,7 +555,7 @@ public class FileHandler extends Handler {
 
     private DirectoryStream<Path> streamFilesForDelete() throws IOException {
         LocalDate maxDaysOffset = LocalDate.now().minus(maxDays.intValue(), ChronoUnit.DAYS);
-        return Files.newDirectoryStream(new File(directory).toPath(), path -> {
+        return Files.newDirectoryStream(getDirectoryAsPath(), path -> {
             boolean result = false;
             String date = obtainDateFromPath(path);
             if (date != null) {
@@ -568,6 +568,10 @@ public class FileHandler extends Handler {
             }
             return result;
         });
+    }
+
+    private Path getDirectoryAsPath() {
+        return Path.of(directory);
     }
 
     private String obtainDateFromPath(Path path) {

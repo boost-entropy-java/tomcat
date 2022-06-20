@@ -34,6 +34,7 @@
   <!-- property values you may customize.                                    -->
   <property file="${user.home}/build.properties"/>
   <property file="build.properties"/>
+  <property file="build.properties.release"/>
   <property file="build.properties.default"/>
 
   <!-- Check Ant Version -->
@@ -47,7 +48,8 @@
   <property name="project"               value="apache-tomcat" />
 
   <!-- Version numbers -->
-  <property name="version"               value="${version.major}.${version.minor}.${version.build}${version.suffix}" />
+  <!-- Keep in sync with webapps/docs/tomcat-docs.xsl -->
+  <property name="version"               value="${version.major}.${version.minor}.${version.build}${version.suffix}${version.dev}" />
   <property name="version.number"        value="${version.major}.${version.minor}.${version.build}.${version.patch}" />
   <property name="version.major.minor"   value="${version.major}.${version.minor}" />
 
@@ -66,7 +68,7 @@
   <property name="jaspic.spec.version"     value="3.0" />
   <property name="jaspic.revision"         value="" />
   <property name="annotation.spec.version" value="2.1" />
-  <property name="annotation.revision"     value="" />
+  <property name="annotation.revision"     value=".1" />
 
   <!-- Release artifact base names -->
   <property name="final.name"            value="${project}-${version}" />
@@ -102,6 +104,7 @@
   <property name="tomcat.xreflect"       value="${tomcat.output}/xreflect"/>
 
   <!-- Jakarta EE 10 platform requires Java 11+ -->
+  <!-- Keep in sync with webapps/docs/tomcat-docs.xsl -->
   <property name="compile.release" value="11"/>
   <property name="min.java.version" value="11"/>
   <property name="build.java.version" value="11"/>
@@ -250,6 +253,7 @@
     <format property="today-iso-8601" pattern="yyyy-MM-dd" locale="en" timezone="UTC"/>
     <format property="tstamp" pattern="HH:mm:ss" locale="en" timezone="UTC"/>
     <format property="tstamp.file" pattern="yyyy-MM-dd HH:mm:ss"/>
+    <format property="tstamp.iso.release" pattern="yyyy-MM-dd'T'HH:mm:ssX" timezone="UTC"/>
   </tstamp>
   <filterset id="version.filters">
     <filter token="YEAR" value="${year}"/>
@@ -262,6 +266,12 @@
     <filter token="GIT_BRANCH" value="${git.branch}"/>
     <filter token="MIN_JAVA_VERSION" value="${min.java.version}"/>
     <filter token="BUILD_JAVA_VERSION" value="${build.java.version}"/>
+    <filter token="ANT_VERSION_REQUIRED" value="${ant.version.required}"/>
+    <filter token="SERVLET_SPEC_VERSION" value="${servlet.spec.version}"/>
+    <filter token="JSP_SPEC_VERSION" value="${jsp.spec.version}"/>
+    <filter token="EL_SPEC_VERSION" value="${el.spec.version}"/>
+    <filter token="WEBSOCKET_SPEC_VERSION" value="${websocket.spec.version}"/>
+    <filter token="JASPIC_SPEC_VERSION" value="${jaspic.spec.version}"/>
   </filterset>
 
   <!-- Files to change line endings for depending on target platform -->
@@ -307,6 +317,7 @@
     <include name="**/*.project"/>
     <include name="**/*.properties"/>
     <include name="**/*.properties.default"/>
+    <include name="**/*.properties.release"/>
     <include name="**/*.shtml"/>
     <include name="**/*.svg"/>
     <include name="**/*.tag"/>
@@ -1536,7 +1547,8 @@
     <echo message="Building Tomcat JDBC pool libraries"/>
     <ant antfile="${tomcat.jdbc.dir}/build.xml" dir="${tomcat.jdbc.dir}"
          inheritAll="false" target="build">
-      <property name="ant.tstamp.now" value ="${ant.tstamp.now}" />
+      <property name="ant.tstamp.now.iso" value ="${ant.tstamp.now.iso}" />
+      <property name="tstamp.file" value ="${tstamp.file}" />
       <property name="tomcat.pool" value="${tomcat.pool}" />
       <property name="tomcat.juli.jar" value="${tomcat-juli.jar}" />
       <property name="skip.download" value="set"/>
@@ -2209,9 +2221,9 @@ Apache Tomcat ${version} native binaries for Win64 AMD64/EMT64 platform.
       sourcepath="${tomcat.dist}/src/java"
       destdir="${tomcat.dist}/webapps/docs/servletapi"
       version="true"
-      windowtitle="Servlet {servlet.spec.version} API Documentation - Apache Tomcat ${version}"
-      doctitle="Servlet {servlet.spec.version} API - Apache Tomcat ${version}"
-      header="&lt;b&gt;Servlet {servlet.spec.version} - Apache Tomcat ${version}&lt;/b&gt;"
+      windowtitle="Servlet ${servlet.spec.version} API Documentation - Apache Tomcat ${version}"
+      doctitle="Servlet ${servlet.spec.version} API - Apache Tomcat ${version}"
+      header="&lt;b&gt;Servlet ${servlet.spec.version} - Apache Tomcat ${version}&lt;/b&gt;"
       bottom="Copyright &amp;#169; 2000-${year} Apache Software Foundation. All Rights Reserved."
       encoding="UTF-8"
       docencoding="UTF-8"
@@ -2505,8 +2517,13 @@ skip.installer property in build.properties" />
         <include name="*.bmp" />
         <include name="*.ico" />
         <include name="*.xml" />
+        <include name="Uninstall.exe.sig" />
       </fileset>
     </copy>
+    <copy file="res/install-win/tomcat-installer.exe.sig"
+        tofile="${tomcat.release}/v${version}/bin/${final.name}.exe.sig"
+        failonerror="false"
+        quiet="true" />
     <copy file="${nsis.installoptions.dll}" todir="${tomcat.dist}" />
     <copy file="${nsis.nsexec.dll}" todir="${tomcat.dist}" />
     <copy file="${nsis.nsisdl.dll}" todir="${tomcat.dist}" />
@@ -2559,12 +2576,18 @@ skip.installer property in build.properties" />
   <target name="-installer-sign-uninstaller"
       unless="skip.installer" depends="-installer-create-uninstaller,setup-jsign"
       if="${do.codesigning}">
+    <!-- If the detached signature doesn't exist, this will sign the file    -->
+    <!-- and create the detached signature. If the detached signature does   -->
+    <!-- exist it will be attached to the file.                              -->
     <jsign file="${tomcat.dist}/Uninstall.exe"
         storepass="${codesigning.storepass}"
         storetype="${codesigning.storetype}"
         alias="${codesigning.alias}"
         alg="${codesigning.digest}"
-        tsaurl="http://timestamp.digicert.com"/>
+        tsaurl="http://timestamp.digicert.com"
+        detached="true"/>
+    <!-- Copy detached signature to source tree -->
+    <copy file="${tomcat.dist}/Uninstall.exe.sig" todir="res/install-win"/>
     <!-- Reproducible builds: consistent timestamps for installer files -->
     <touch datetime="${tstamp.file}" pattern="yyyy-MM-dd HH:mm:ss">
       <fileset dir="${tomcat.dist}"/>
@@ -2596,11 +2619,109 @@ skip.installer property in build.properties" />
         storetype="${codesigning.storetype}"
         alias="${codesigning.alias}"
         alg="${codesigning.digest}"
-        tsaurl="http://timestamp.digicert.com"/>
+        tsaurl="http://timestamp.digicert.com"
+        detached="true" />
+    <!-- Copy detached signature to source tree -->
+    <copy file="${tomcat.release}/v${version}/bin/${final.name}.exe.sig"
+        tofile="res/install-win/tomcat-installer.exe.sig"/>
+    <delete file="${tomcat.release}/v${version}/bin/${final.name}.exe.sig" />
     <!-- .exe has changed so need to redo checksums and OpenPGP signature -->
     <delete file="${tomcat.release}/v${version}/bin/${final.name}.exe.asc" />
     <delete file="${tomcat.release}/v${version}/bin/${final.name}.exe.sha512" />
     <hashAndSign file="${tomcat.release}/v${version}/bin/${final.name}.exe" />
+  </target>
+
+  <target name="-pre-release-lone-target-check">
+    <fail message="The pre-release target must be called all on its own. Specifically, you must run 'ant release' /after/ 'and pre-release' in order to properly configure the build.">
+      <condition>
+        <not>
+          <equals arg1="${ant.project.invoked-targets}" arg2="pre-release" />
+        </not>
+      </condition>
+    </fail>
+  </target>
+
+  <target name="-pre-release-read-asf-username" unless="release.asfusername">
+    <input message="Enter ASF username" addproperty="release.asfusername" defaultValue="${user.name}" />
+  </target>
+
+  <target name="pre-release" depends="-pre-release-lone-target-check, -pre-release-read-asf-username"
+      description="Prepares for a release build by writing build.properties.release which contains information about the release-build environment.">
+    <echo file="build.properties.release"># -----------------------------------------------------------------------------
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# -----------------------------------------------------------------------------
+
+# This file was auto-generated by the pre-release Ant target
+
+# Set the version-dev to "" (empty string) as this is not a development release.
+version.dev=
+
+# Ensure consistent timestamps for reproducible builds
+ant.tstamp.now.iso=${tstamp.iso.release}
+
+# Reproducible builds require the use of the build tools defined below. The
+# vendors (where appropriate) and versions must match exactly for a reproducible
+# build since this data is embedded in various files, particularly JAR file
+# manifests, as part of the build process
+#
+# Apache Ant:      ${ant.version}
+#
+# Java Name:       ${java.vm.name}
+# Java Vendor:     ${java.vm.vendor}
+# Java Version:    ${java.vm.version}
+
+# The following is provided for information only. Builds will be repeatable
+# whether or not the build ennvironment in consistent with this information
+#
+# OS:              ${os.arch} ${os.name} ${os.version}
+# File encoding:   ${file.encoding}
+#
+# Release Manager: ${release.asfusername}
+</echo>
+    <echo file="res/maven/mvn.properties.release"># -----------------------------------------------------------------------------
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# -----------------------------------------------------------------------------
+
+# This file was auto-generated by the pre-release Ant target
+
+# Remove version-dev to from the version since this is not a development release.
+maven.asf.release.deploy.version=${version.major}.${version.minor}.${version.build}${version.suffix}
+
+# Re-use the same GPG executable
+gpg.exec=${gpg.exec}
+
+# Set the user name to use to upload the artefacts to Nexus
+asf.ldap.username=${release.asfusername}
+</echo>
+    <replace file="webapps/docs/changelog.xml"
+        token="rtext=&quot;in development&quot;"
+        value="rtext=&quot;&quot;" />
   </target>
 
   <target name="release"

@@ -140,15 +140,6 @@
       </ul>
     </property>
 
-    <property name="org.apache.tomcat.websocket. STRICT_SPEC_COMPLIANCE">
-      <p>The default value of this system property is <code>false</code>.</p>
-      <p>If this is <code>true</code> the default values will be changed
-      to <code>true</code> instead of <code>false</code> for:</p>
-      <ul>
-        <li><code>org.apache.tomcat.websocket.server.WsServerContainer#isEnforceNoAddAfterHandshake</code></li>
-      </ul>
-    </property>
-
   </properties>
 
 </section>
@@ -306,12 +297,6 @@
       <p>The class name of the factory to use to create resources of type
       <code>jakarta.mail.Session</code>. If not specified the default of
       <code>org.apache.naming.factory.MailSessionFactory</code> is used.</p>
-    </property>
-
-    <property name="jvmRoute">
-      <p>Provides a default value for the <code>jvmRoute</code> attribute of the
-      <a href="engine.html">Engine</a> element. It does not override the value
-      configured on the <a href="engine.html">Engine</a> element.</p>
     </property>
 
     <property name="catalina.config">

@@ -104,7 +104,113 @@
   They eventually become mixed with the numbered issues (i.e., numbered
   issues do not "pop up" wrt. others).
 -->
-<section name="Tomcat 10.1.0-M16 (markt)" rtext="in development">
+<section name="Tomcat 10.1.0-M17 (markt)" rtext="in development">
+  <subsection name="Catalina">
+    <changelog>
+      <fix>
+        <bug>66104</bug>: Avoid error message by not trying to clean up old
+        files from the logging directory before the directory has been created.
+        Based on <pr>521</pr> by HanLi. (markt)
+      </fix>
+      <update>
+        Update the Jakarta Common Annotations API to 2.1.1. This deprecates the
+        <code>ManagedBean</code> annotation which will be removed in a future
+        release. (markt)
+      </update>
+    </changelog>
+  </subsection>
+  <subsection name="Coyote">
+    <changelog>
+      <add>
+        Provide dedicated loggers
+        (<code>org.apache.tomcat.util.net.NioEndpoint.handshake</code> /
+        <code>org.apache.tomcat.util.net.Nio2Endpoint.handshake</code>) for TLS
+        handshake failures. (markt)
+      </add>
+      <add>
+        Enable the use of the FIPS provider for TLS enabled Connectors when
+        using Tomcat Native 1.2.34 onwards built with OpenSSL 3.0.x onwards.
+        (markt)
+      </add>
+      <scode>
+        Remove the <code>jmvRoute</code> system property used to configure a
+        default value for the <code>jmvRoute</code> attribute of an Engine.
+        (markt)
+      </scode>
+      <update>
+        Update experimental Panama modules with support for OpenSSL 3.0+.
+        OpenSSL 1.1 remains supported. (remm)
+      </update>
+    </changelog>
+  </subsection>
+  <subsection name="Jasper">
+    <changelog>
+      <add>
+        Add support for specifying Java 19 (with the value <code>19</code>) as
+        the compiler source and/or compiler target for JSP compilation. If used
+        with an Eclipse JDT compiler version that does not support these values,
+        a warning will be logged and the default will used.
+        (markt)
+      </add>
+    </changelog>
+  </subsection>
+  <subsection name="WebSocket">
+    <changelog>
+      <update>
+        Remove configuration settings related to the restriction on WebSocket
+        endpoint deployment that was removed in version 2.1 of the
+        specification. (markt)
+      </update>
+    </changelog>
+  </subsection>
+  <subsection name="Web applications">
+    <changelog>
+      <fix>
+        Documentation. <bug>62245</bug>: Include <code>contextXsltFile</code>
+        when discussing options for configuring directory listings. (markt)
+      </fix>
+    </changelog>
+  </subsection>
+  <subsection name="Other">
+    <changelog>
+      <update>
+        Update to bnd 6.3.1. (markt)
+      </update>
+      <update>
+        The minimum Ant version required to build Tomcat 10.1.x is now 1.10.2.
+        (markt)
+      </update>
+      <add>
+        Add additional automation to the build process to reduce the number of
+        manual steps that release managers must perform. (schultz)
+      </add>
+      <add>
+        Implement support for reproducible builds. Reproducible builds are
+        independent of operating system but require the same Ant version and
+        same JDK (vendor and version) to be used as associated version
+        information is embedded in a number of build outputs such as JAR file
+        manifests. (markt)
+      </add>
+      <update>
+        Update the packaged version of the Tomcat Native Library to 1.2.34 to
+        improve the support for building with OpenSSL 3.0.x.(markt)
+      </update>
+      <update>
+        Update the minimum supported version of Tomcat Native to 1.2.34 to allow
+        the removal of the deprecated Java API associated with features that
+        will be removed in Tomcat Native 2.0.x. (markt)
+      </update>
+      <fix>
+        Remove and/or update references to the removed
+        <code>org.apache.tomcat.util.threads.res</code> package. The
+        <code>LocalStrings*.properties</code> files in that package were moved
+        to <code>org.apache.tomcat.util.threads</code> package for consistency
+        with the rest of the Tomcat code base.
+      </fix>
+    </changelog>
+  </subsection>
+</section>
+<section name="Tomcat 10.1.0-M16 (markt)" rtext="2022-06-09">
   <subsection name="Catalina">
     <changelog>
       <fix>
